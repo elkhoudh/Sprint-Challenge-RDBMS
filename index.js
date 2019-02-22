@@ -3,8 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
-
-// Routes
+const db = require("./data/dbConfig");
 
 // server init
 const server = express();
@@ -15,7 +14,14 @@ server.use(cors());
 server.use(helmet());
 server.use(morgan("dev"));
 
-// Routers
+// Routes
+server.get("/api/projects", (req, res) => {
+  db("projects")
+    .then(projects => {
+      res.json(projects);
+    })
+    .catch(() => res.status(500).json({ message: "Server Error" }));
+});
 
 const port = process.env.PORT || 2000;
 
