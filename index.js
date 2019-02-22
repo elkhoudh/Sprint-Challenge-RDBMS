@@ -23,6 +23,30 @@ server.get("/api/projects", (req, res) => {
     .catch(() => res.status(500).json({ message: "Server Error" }));
 });
 
+server.delete("/api/projects/:id", (req, res) => {
+  const { id } = req.params;
+  db("actions")
+    .where("project_id", id)
+    .del()
+    .then(() => {
+      db("projects")
+        .where({ id })
+        .del()
+        .then(result => {
+          if (result) {
+            db("projects").then(projects => {
+              res.json(projects);
+            });
+          } else {
+            res.status(400).json({ message: "Faiuled to delete project" });
+          }
+        });
+    })
+    .catch(() => {
+      res.status(500).json({ message: "Server Error" });
+    });
+});
+
 server.post("/api/projects", (req, res) => {
   const { name, description } = req.body;
 
